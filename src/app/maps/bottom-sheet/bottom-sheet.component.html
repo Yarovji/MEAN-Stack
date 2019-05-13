@@ -1,0 +1,10 @@
+<p>Країна: {{clickCountryName}}</p>
+<p>Місто: {{clickCityName}}</p>
+<p>Температура: {{dataWeatherTemp}} &#8451; </p>
+<p>Курс {{kyrsData}}</p>
+<p>Курс {{kyrsDataDolar}}</p>
+
+  <button (click)="showDiv = !showDiv" mat-stroked-button color="primary" >SEE MORE</button>
+  <div *ngIf="showDiv" >
+    <app-cash-graphs [yearArayData]="yearAray" [kyrsArrayData]="kyrsArray"></app-cash-graphs>
+  </div>
