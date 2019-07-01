@@ -5,7 +5,6 @@ import { Subscription } from "rxjs";
 
 import { PostsService } from "../posts.service";
 import { Post } from "../post.model";
-import { mimeType } from "./mime-type.validator";
 import { AuthService } from "../../auth/auth.service";
 
 @Component({
@@ -37,14 +36,16 @@ export class PostCreateComponent implements OnInit, OnDestroy {
         this.isLoading = false;
       });
     this.form = new FormGroup({
-      title: new FormControl(null, {
-        validators: [Validators.required, Validators.minLength(3)]
+      name: new FormControl(null, { validators: [Validators.required] }),
+      surname: new FormControl(null, { validators: [Validators.required] }),
+      gender: new FormControl(null, { validators: [Validators.required] }),
+      birthday: new FormControl(null, { validators: [Validators.required] }),
+      workexp: new FormControl(null, { validators: [Validators.required] }),
+      technologies: new FormControl(null, {
+        validators: [Validators.required]
       }),
-      content: new FormControl(null, { validators: [Validators.required] }),
-      image: new FormControl(null, {
-        validators: [Validators.required],
-        asyncValidators: [mimeType]
-      })
+      email: new FormControl(null, { validators: [Validators.required] }),
+      phone: new FormControl(null, { validators: [Validators.required] })
     });
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has("postId")) {
@@ -55,15 +56,25 @@ export class PostCreateComponent implements OnInit, OnDestroy {
           this.isLoading = false;
           this.post = {
             id: postData._id,
-            title: postData.title,
-            content: postData.content,
-            imagePath: postData.imagePath,
+            name: postData.name,
+            surname: postData.surname,
+            gender: postData.gender,
+            birthday: postData.birthday,
+            workexp: postData.workexp,
+            technologies: postData.technologies,
+            email: postData.email,
+            phone: postData.phone,
             creator: postData.creator
           };
           this.form.setValue({
-            title: this.post.title,
-            content: this.post.content,
-            image: this.post.imagePath
+            name: this.post.name,
+            surname: this.post.surname,
+            gender: this.post.gender,
+            birthday: this.post.birthday,
+            workexp: this.post.workexp,
+            technologies: this.post.technologies,
+            email: this.post.email,
+            phone: this.post.phone
           });
         });
       } else {
@@ -91,16 +102,26 @@ export class PostCreateComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     if (this.mode === "create") {
       this.postsService.addPost(
-        this.form.value.title,
-        this.form.value.content,
-        this.form.value.image
+        this.form.value.name,
+        this.form.value.surname,
+        this.form.value.gender,
+        this.form.value.birthday,
+        this.form.value.workexp,
+        this.form.value.technologies,
+        this.form.value.email,
+        this.form.value.phone
       );
     } else {
       this.postsService.updatePost(
         this.postId,
-        this.form.value.title,
-        this.form.value.content,
-        this.form.value.image
+        this.form.value.name,
+        this.form.value.surname,
+        this.form.value.gender,
+        this.form.value.birthday,
+        this.form.value.workexp,
+        this.form.value.technologies,
+        this.form.value.email,
+        this.form.value.phone
       );
     }
     this.form.reset();

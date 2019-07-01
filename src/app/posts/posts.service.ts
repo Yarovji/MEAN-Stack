@@ -1,36 +1,40 @@
-import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
-import { Subject } from "rxjs";
-import { map } from "rxjs/operators";
-import { Router } from "@angular/router";
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
-import { environment } from "../../environments/environment";
-import { Post } from "./post.model";
+import { environment } from '../../environments/environment';
+import { Post } from './post.model';
 
-const BACKEND_URL = environment.apiUrl + "/posts/";
+const BACKEND_URL = environment.apiUrl + '/posts/';
 
-@Injectable({ providedIn: "root" })
+@Injectable({ providedIn: 'root' })
 export class PostsService {
   private posts: Post[] = [];
   private postsUpdated = new Subject<{ posts: Post[]; postCount: number }>();
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  getPosts(postsPerPage: number, currentPage: number) {
-    const queryParams = `?pagesize=${postsPerPage}&page=${currentPage}`;
+  getPosts() {
     this.http
       .get<{ message: string; posts: any; maxPosts: number }>(
-        BACKEND_URL + queryParams
+        BACKEND_URL
       )
       .pipe(
         map(postData => {
           return {
             posts: postData.posts.map(post => {
               return {
-                title: post.title,
-                content: post.content,
                 id: post._id,
-                imagePath: post.imagePath,
+                name: post.name,
+                surname: post.surname,
+                gender: post.gender,
+                birthday: post.birthday,
+                workexp: post.workexp,
+                technologies: post.technologies,
+                email: post.email,
+                phone: post.phone,
                 creator: post.creator
               };
             }),
@@ -54,49 +58,73 @@ export class PostsService {
   getPost(id: string) {
     return this.http.get<{
       _id: string;
-      title: string;
-      content: string;
-      imagePath: string;
+      name: string;
+      surname: string;
+      gender: string;
+      birthday: string;
+      workexp: string;
+      technologies: string;
+      email: string;
+      phone: string;
       creator: string;
     }>(BACKEND_URL + id);
   }
 
-  addPost(title: string, content: string, image: File) {
+  addPost(
+    name: string, surname: string, gender: string, birthday: string, workexp: string, technologies: string,
+    email: string, phone: string) {
     const postData = new FormData();
-    postData.append("title", title);
-    postData.append("content", content);
-    postData.append("image", image, title);
+    postData.append('name', name);
+    postData.append('surname', surname);
+    postData.append('gender', gender);
+    postData.append('birthday', birthday);
+    postData.append('workexp', workexp);
+    postData.append('technologies', technologies);
+    postData.append('email', email);
+    postData.append('phone', phone);
     this.http
       .post<{ message: string; post: Post }>(
         BACKEND_URL,
         postData
       )
       .subscribe(responseData => {
-        this.router.navigate(["/"]);
+        this.router.navigate(['/']);
       });
   }
 
-  updatePost(id: string, title: string, content: string, image: File | string) {
+  updatePost(id: string, name: string, surname: string,
+    gender: string, birthday: string, workexp: string, technologies: string,
+    email: string, phone: string) {
     let postData: Post | FormData;
-    if (typeof image === "object") {
+    if (typeof name === 'string') {
       postData = new FormData();
-      postData.append("id", id);
-      postData.append("title", title);
-      postData.append("content", content);
-      postData.append("image", image, title);
+      postData.append('id', id);
+      postData.append('name', name);
+      postData.append('surname', surname);
+      postData.append('gender', gender);
+      postData.append('birthday', birthday);
+      postData.append('workexp', workexp);
+      postData.append('technologies', technologies);
+      postData.append('email', email);
+      postData.append('phone', phone);
     } else {
       postData = {
         id: id,
-        title: title,
-        content: content,
-        imagePath: image,
+        name: name,
+        surname: surname,
+        gender: gender,
+        birthday: birthday,
+        workexp: workexp,
+        technologies: technologies,
+        email: email,
+        phone: phone,
         creator: null
       };
     }
     this.http
       .put(BACKEND_URL + id, postData)
       .subscribe(response => {
-        this.router.navigate(["/"]);
+        this.router.navigate(['/']);
       });
   }
 

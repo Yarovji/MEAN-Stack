@@ -1,9 +1,14 @@
 const mongoose = require("mongoose");
 
 const postSchema = mongoose.Schema({
-  title: { type: String, required: true },
-  content: { type: String, required: true },
-  imagePath: { type: String, required: true },
+  name: { type: String, required: true },
+  surname: { type: String, required: true },
+  gender: { type: String, required: true },
+  birthday: { type: String, required: true },
+  workexp: { type: String, required: true },
+  technologies : { type: String, required: true },
+  email: { type: String, required: true },
+  phone : { type: String, required: true },
   creator: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }
 });
 

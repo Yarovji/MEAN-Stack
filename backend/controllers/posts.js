@@ -3,9 +3,14 @@ const Post = require("../models/post");
 exports.createPost = (req, res, next) => {
   const url = req.protocol + "://" + req.get("host");
   const post = new Post({
-    title: req.body.title,
-    content: req.body.content,
-    imagePath: url + "/images/" + req.file.filename,
+    name: req.body.name,
+    surname: req.body.surname,
+    gender: req.body.gender,
+    birthday: req.body.birthday,
+    workexp: req.body.workexp,
+    technologies: req.body.technologies,
+    email: req.body.email,
+    phone: req.body.phone,
     creator: req.userData.userId
   });
   post
@@ -27,16 +32,16 @@ exports.createPost = (req, res, next) => {
 };
 
 exports.updatePost = (req, res, next) => {
-  let imagePath = req.body.imagePath;
-  if (req.file) {
-    const url = req.protocol + "://" + req.get("host");
-    imagePath = url + "/images/" + req.file.filename;
-  }
   const post = new Post({
     _id: req.body.id,
-    title: req.body.title,
-    content: req.body.content,
-    imagePath: imagePath,
+    name: req.body.name,
+    surname: req.body.surname,
+    gender: req.body.gender,
+    birthday: req.body.birthday,
+    workexp: req.body.workexp,
+    technologies: req.body.technologies,
+    email: req.body.email,
+    phone: req.body.phone,
     creator: req.userData.userId
   });
   Post.updateOne({ _id: req.params.id, creator: req.userData.userId }, post)
@@ -59,9 +64,6 @@ exports.getPosts = (req, res, next) => {
   const currentPage = +req.query.page;
   const postQuery = Post.find();
   let fetchedPosts;
-  if (pageSize && currentPage) {
-    postQuery.skip(pageSize * (currentPage - 1)).limit(pageSize);
-  }
   postQuery
     .then(documents => {
       fetchedPosts = documents;

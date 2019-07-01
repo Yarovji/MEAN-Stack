@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
-import { PageEvent } from "@angular/material";
+import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
+import { PageEvent, MatTableDataSource, MatSort } from "@angular/material";
 import { Subscription } from "rxjs";
 
 import { Post } from "../post.model";
@@ -12,21 +12,16 @@ import { AuthService } from "../../auth/auth.service";
   styleUrls: ["./post-list.component.scss"]
 })
 export class PostListComponent implements OnInit, OnDestroy {
-  // posts = [
-  //   { title: "First Post", content: "This is the first post's content" },
-  //   { title: "Second Post", content: "This is the second post's content" },
-  //   { title: "Third Post", content: "This is the third post's content" }
-  // ];
   posts: Post[] = [];
-  isLoading = false;
   totalPosts = 0;
-  postsPerPage = 2;
-  currentPage = 1;
   pageSizeOptions = [1, 2, 5, 10];
   userIsAuthenticated = false;
   userId: string;
   private postsSub: Subscription;
   private authStatusSub: Subscription;
+  displayedColumns: string[] = ['name', 'surname', 'gender', 'birthday', 'workexp', 'technologies', 'email', 'phone', 'id'];
+  dataSourcePost: MatTableDataSource<Post>;
+  @ViewChild(MatSort) sort: MatSort;
 
   constructor(
     public postsService: PostsService,
@@ -34,15 +29,15 @@ export class PostListComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.isLoading = true;
-    this.postsService.getPosts(this.postsPerPage, this.currentPage);
+    this.postsService.getPosts();
     this.userId = this.authService.getUserId();
     this.postsSub = this.postsService
       .getPostUpdateListener()
       .subscribe((postData: { posts: Post[]; postCount: number }) => {
-        this.isLoading = false;
         this.totalPosts = postData.postCount;
         this.posts = postData.posts;
+        this.dataSourcePost = new MatTableDataSource(this.posts);
+        this.dataSourcePost.sort = this.sort;
       });
     this.userIsAuthenticated = this.authService.getIsAuth();
     this.authStatusSub = this.authService
@@ -53,20 +48,10 @@ export class PostListComponent implements OnInit, OnDestroy {
       });
   }
 
-  onChangedPage(pageData: PageEvent) {
-    this.isLoading = true;
-    this.currentPage = pageData.pageIndex + 1;
-    this.postsPerPage = pageData.pageSize;
-    this.postsService.getPosts(this.postsPerPage, this.currentPage);
-  }
-
   onDelete(postId: string) {
-    this.isLoading = true;
     this.postsService.deletePost(postId).subscribe(() => {
-      this.postsService.getPosts(this.postsPerPage, this.currentPage);
-    }, () => {
-      this.isLoading = false;
-    });
+      this.postsService.getPosts();
+    }, () => {});
   }
 
   ngOnDestroy() {

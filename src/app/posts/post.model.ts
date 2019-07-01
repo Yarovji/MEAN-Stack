@@ -1,7 +1,12 @@
 export interface Post {
   id: string;
-  title: string;
-  content: string;
-  imagePath: string;
+  name: string;
+  surname: string;
+  gender: string;
+  birthday: string;
+  workexp: string;
+  technologies: string;
+  email: string;
+  phone: string;
   creator: string;
 }
